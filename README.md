@@ -20,11 +20,11 @@ then, load:
 
 import "github.com/XANi/go-yamlcfg"
 
-cfgFiles = [
+cfgFiles = []string{
     "$HOME/.config/my/cnf.yaml",
     "./cfg/config.yaml",
     "/etc/my/cnf.yaml",
-]
+}
 var cfg MyConfig
 err := yamlcfg.LoadConfig(cfgFiles, &cfg)
 ```
