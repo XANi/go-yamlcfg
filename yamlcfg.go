@@ -23,7 +23,10 @@ func LoadConfig(cfgFiles []string, cfg interface{}) (err error) {
 	}
 	//fmt.Sprintf("Loading config file: %s", cfgFile))
 	raw_cfg, err := ioutil.ReadFile(cfgFile)
+	if err != nil { return err }
+	if len(raw_cfg) < 1 { return fmt.Errorf("Something gone wrong, file %s is 0 size or can't be read", cfgFile) }
 	err = yaml.Unmarshal([]byte(raw_cfg), cfg)
+	if err != nil { return err }
 	if cfg, ok := cfg.(interface{SetConfigPath(string)}); ok {
 		cfg.SetConfigPath(cfgFile)
 	}
