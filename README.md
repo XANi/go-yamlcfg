@@ -20,7 +20,7 @@ then, load:
 
 import "github.com/XANi/go-yamlcfg"
 
-cfgFiles = []string{
+cfgFiles := []string{
     "$HOME/.config/my/cnf.yaml",
     "./cfg/config.yaml",
     "/etc/my/cnf.yaml",
