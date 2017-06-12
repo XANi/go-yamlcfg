@@ -44,6 +44,21 @@ func (c *testCfg1)SetConfig(s string) {
 }
 ```
 
+## creating default config file
+
+Define method `GetDefaultConfig() string` that returns default config, like that:
+
+```go
+var testCfg3Default = `---
+test3: testing
+`
+func (c *testCfg3) GetDefaultConfig() string {
+    return testCfg3Default
+}
+```
+
+Default config (and any sub-dirs leading to it) will be created at first entry of cfgFiles, then loaded
+
 # TODO
 
 * basic include support

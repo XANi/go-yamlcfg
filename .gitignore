@@ -44,4 +44,3 @@ _testmain.go
 # local test data
 
 t-data/*local
-t-data/nagios.cmd
