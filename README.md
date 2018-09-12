@@ -39,7 +39,7 @@ It will err out on:
 Define method `SetConfigPath(string)` on config struct like that:
 
 ```go
-func (c *testCfg1)SetConfig(s string) {
+func (c *testCfg1)SetConfigPath(s string) {
 	log.Infof("Loaded config file from %s",s)
 }
 ```
