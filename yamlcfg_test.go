@@ -2,6 +2,7 @@ package yamlcfg
 
 import (
 	. "github.com/smartystreets/goconvey/convey"
+	"regexp"
 	"testing"
 	"path/filepath"
 	"os"
@@ -62,8 +63,6 @@ func TestService(t *testing.T) {
 	Convey("No config file in slice",t,func() {
 		So(err,ShouldNotBeNil)
 	})
-
-
 }
 
 func TestDefaultGeneration(t *testing.T) {
@@ -90,4 +89,14 @@ func TestDefaultGeneration(t *testing.T) {
 	})
 
 
+}
+
+func TestRandomString(t *testing.T) {
+	str1 := RandomString("abcd1",100)
+	abcdRe := regexp.MustCompile(`^[abcd1]+$`)
+	matched := abcdRe.MatchString(str1)
+	Convey("string should contain only abcd1: " + str1 , t, func () {
+		So(len(str1), ShouldEqual, 100)
+		So(matched,ShouldBeTrue)
+	})
 }

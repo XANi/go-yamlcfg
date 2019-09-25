@@ -3,12 +3,17 @@ package yamlcfg
 import (
 	"fmt"
 	"gopkg.in/yaml.v1"
+	"crypto/rand"
+	"math/big"
 	"os"
 	"io/ioutil"
 	"path/filepath"
 )
 
-
+var CharsetAlphanumeric = "1234567890ABCDEFGHIKLMNOPQRSTUVWXYZabcdefghiklmnopqrstuvwxyz"
+// LoadConfig loads first YAML file on cfgFiles list into cfg interface
+// if cfg have defined GetDefaultConfig() method it will also create a default config file in first location if it can't find any config
+// see README ( https://github.com/XANi/go-yamlcfg/blob/master/README.md ) for details
 func LoadConfig(cfgFiles []string, cfg interface{}) (err error) {
 	var cfgFile string
 	if len(cfgFiles) < 1 { return fmt.Errorf("cfgFiles slice needs at least one element") }
@@ -48,4 +53,15 @@ func LoadConfig(cfgFiles []string, cfg interface{}) (err error) {
 	}
 
 	return err
+}
+// RandomString generates random string with the defined dictionary
+func RandomString(chars string, length int) string {
+	b := make([]byte, length)
+	chLength := big.NewInt(int64(len(chars)))
+	for i := range b {
+		r, err := rand.Int(rand.Reader,chLength)
+		if err != nil {panic("error getting random data: " + err.Error())}
+		b[i] = chars[r.Int64()]
+  }
+  return string(b)
 }

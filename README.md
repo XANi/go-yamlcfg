@@ -57,6 +57,22 @@ func (c *testCfg3) GetDefaultConfig() string {
 }
 ```
 
+or, just return yaml directly if you do not need comments: {
+
+```go
+func (c *testCfg) GetDefaultConfig() string {
+	defaultCfg := testCfg{
+		User: "root",
+		Pass: yamlcfg.RandomString(yamlcfg.CharsetAlphanumeric, 32)
+	}
+	out, err := yaml.Marshal(&defaultCfg)
+	if err != nil {panic(fmt.Errorf("can't marshal [%T- %+v] into YAML: %s",defaultCfg,defaultCfg,err))}
+	return string(out)
+}
+```
+
+## helpers
+
 Default config (and any sub-dirs leading to it) will be created at first entry of cfgFiles, then loaded
 
 # TODO
