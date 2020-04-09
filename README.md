@@ -71,6 +71,10 @@ func (c *testCfg) GetDefaultConfig() string {
 }
 ```
 
+if `GetDefaultConfig()` returns empty string, config will not be created
+
+
+
 ## helpers
 
 Default config (and any sub-dirs leading to it) will be created at first entry of cfgFiles, then loaded

@@ -12,7 +12,7 @@ import (
 
 var CharsetAlphanumeric = "1234567890ABCDEFGHIKLMNOPQRSTUVWXYZabcdefghiklmnopqrstuvwxyz"
 // LoadConfig loads first YAML file on cfgFiles list into cfg interface
-// if cfg have defined GetDefaultConfig() method it will also create a default config file in first location if it can't find any config
+// if cfg have defined GetDefaultConfig() method it will also create a default config file in first location if it can't find any config and the method returns more than zero characters
 // see README ( https://github.com/XANi/go-yamlcfg/blob/master/README.md ) for details
 func LoadConfig(cfgFiles []string, cfg interface{}) (err error) {
 	var cfgFile string
@@ -27,6 +27,9 @@ func LoadConfig(cfgFiles []string, cfg interface{}) (err error) {
 	if cfgFile == "" {
 		if cfg, ok := cfg.(interface{GetDefaultConfig() string}); ok {
 			defaultCfg := cfg.GetDefaultConfig()
+			if len(defaultCfg) == 0 {
+				return fmt.Errorf("could not find config file: %v", cfgFiles)
+			}
 			defaultCfgPath, _ := filepath.Abs(os.ExpandEnv(cfgFiles[0]))
 			err := os.MkdirAll(filepath.Dir(defaultCfgPath),os.FileMode(0755))
 			if err != nil {
