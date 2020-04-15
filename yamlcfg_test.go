@@ -1,7 +1,9 @@
 package yamlcfg
 
 import (
+	"fmt"
 	. "github.com/smartystreets/goconvey/convey"
+	"github.com/stretchr/testify/assert"
 	"regexp"
 	"testing"
 	"path/filepath"
@@ -99,4 +101,19 @@ func TestRandomString(t *testing.T) {
 		So(len(str1), ShouldEqual, 100)
 		So(matched,ShouldBeTrue)
 	})
+}
+
+type testCfgValidate struct {
+	Test1 string `yaml:"test1"`
+}
+
+func (c *testCfgValidate)Validate() error {
+	return fmt.Errorf("err out on validate")
+}
+
+
+func TestValidate(t *testing.T) {
+	var cfg testCfgValidate
+	err := LoadConfig([]string{"./t-data/t1.cfg"}, &cfg)
+	assert.EqualError(t,err,"err out on validate")
 }

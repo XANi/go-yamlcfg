@@ -73,6 +73,10 @@ func (c *testCfg) GetDefaultConfig() string {
 
 if `GetDefaultConfig()` returns empty string, config will not be created
 
+## validation / adding defaults
+
+Add `Validate() error` method. It will be called at the end and err returned will be returned from `LoadConfig`. 
+It is also a good place to put any default value handling.
 
 
 ## helpers
