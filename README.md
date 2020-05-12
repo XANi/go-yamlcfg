@@ -34,6 +34,47 @@ It will err out on:
 * no readable file in config file list
 * first file found was unparseable
 
+## Partial config parsing
+
+If you need to have more flexible config format, say a plugin list with each plugin having its own separate config definition, 
+you might want to use `yaml.Node` (from yaml.v3 module) to specify a part of config as to be parsed later, like
+
+```go
+type PluginConfig struct {
+	Name string `yaml:"name"`
+	Plugin string `yaml:"plugin"`
+	Config yaml.Node `yaml:"config"`
+}
+
+// pass your config struct to this function, it will fill it
+func (p *PluginConfig) GetConfig(i interface{}) error{
+	if p.Config.Kind != 0 {
+		return p.Config.Decode(i)
+	} else {
+        // no changes to the struct
+        // make sure your plugin handles that and loads the default config or errors out if applicable
+		return nil
+	}
+}
+
+type Config struct {
+	Plugins []PluginConfig
+}
+```
+
+and then re-parse that fragment when initializing plugin:
+
+```go
+func (p *Plugin) initPlugin(cfg PluginConfig) error {
+    pluginCfg := pluginConfig{
+        Default: "values"
+    }
+    err := cfg.GetConfig()
+    if err != nil { return err }
+}
+```
+
+
 ## getting loaded config name
 
 Define method `SetConfigPath(string)` on config struct like that:
