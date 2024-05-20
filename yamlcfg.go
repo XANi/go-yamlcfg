@@ -57,6 +57,15 @@ func LoadConfig(cfgFiles []string, cfg interface{}) (err error) {
 	if len(raw_cfg) < 1 {
 		return fmt.Errorf("Something gone wrong, file %s is 0 size or can't be read", cfgFile)
 	}
+	if cfg, ok := cfg.(interface{ SetConfigPath(string) }); ok {
+		cfg.SetConfigPath(cfgFile)
+	}
+	return LoadConfigFromString(string(raw_cfg), cfg)
+}
+
+func LoadConfigFromString(s string, cfg interface{}) error {
+	raw_cfg := []byte(s)
+
 	// cfg have interface to return secrets, parse YAML via template
 	if cfg, ok := cfg.(interface{ GetSecret(string) string }); ok {
 		t := template.New("config")
@@ -75,13 +84,11 @@ func LoadConfig(cfgFiles []string, cfg interface{}) (err error) {
 		}
 		raw_cfg = b.Bytes()
 	}
-	err = yaml.Unmarshal([]byte(raw_cfg), cfg)
+	err := yaml.Unmarshal([]byte(raw_cfg), cfg)
 	if err != nil {
 		return err
 	}
-	if cfg, ok := cfg.(interface{ SetConfigPath(string) }); ok {
-		cfg.SetConfigPath(cfgFile)
-	}
+
 	if cfg, ok := cfg.(interface{ Validate() error }); ok {
 		err := cfg.Validate()
 		if err != nil {
