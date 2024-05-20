@@ -1,6 +1,7 @@
 package yamlcfg
 
 import (
+	"bytes"
 	"crypto/rand"
 	"fmt"
 	"gopkg.in/yaml.v3"
@@ -8,6 +9,7 @@ import (
 	"math/big"
 	"os"
 	"path/filepath"
+	"text/template"
 )
 
 var CharsetAlphanumeric = "1234567890ABCDEFGHIKLMNOPQRSTUVWXYZabcdefghiklmnopqrstuvwxyz"
@@ -54,6 +56,24 @@ func LoadConfig(cfgFiles []string, cfg interface{}) (err error) {
 	}
 	if len(raw_cfg) < 1 {
 		return fmt.Errorf("Something gone wrong, file %s is 0 size or can't be read", cfgFile)
+	}
+	// cfg have interface to return secrets, parse YAML via template
+	if cfg, ok := cfg.(interface{ GetSecret(string) string }); ok {
+		t := template.New("config")
+		t.Funcs(map[string]any{
+			"secret": func(s string) string { return cfg.GetSecret(s) },
+			"env":    func(s string) string { return os.Getenv(s) },
+		})
+		tmpl, err := t.Parse(string(raw_cfg))
+		if err != nil {
+			return fmt.Errorf("error parsing config template: %w", err)
+		}
+		var b bytes.Buffer
+		err = tmpl.Execute(&b, nil)
+		if err != nil {
+			return fmt.Errorf("error executing config template: %w", err)
+		}
+		raw_cfg = b.Bytes()
 	}
 	err = yaml.Unmarshal([]byte(raw_cfg), cfg)
 	if err != nil {

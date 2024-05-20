@@ -34,6 +34,23 @@ It will err out on:
 * no readable file in config file list
 * first file found was unparseable
 
+## Templating parsed config (env, secrets etc.)
+
+Adding method `GetSecret(string) string` to a struct enables template parsing via `text/template` before parsing the YAML
+
+Aside from standard `text/template` functions additional ones are available:
+
+* `{{ secret "secretname"}}` will call `GetSecret("secretname") string` method on the config struct. 
+  Connect any serial retrieval there. The method should report errors separately as there is not really sensible way to push errors up
+* `{{ env "USER"}}` will call `os.Getenv`
+
+Both outputs are string only so lack of key should be signalled with empty string if you want to base config logic on it. 
+But do try to avoid making config into an application, this is not a library for that and this function is designed so
+loading vars from k8s or environment is easier.
+
+**Be warned**, the value is inserted into raw text of YAML so it is entirely possible to have undesirable config injected via ENV (if say it contains newlines),
+so it should only be used when inputs are secure.
+
 ## Partial config parsing
 
 If you need to have more flexible config format, say a plugin list with each plugin having its own separate config definition, 

@@ -113,3 +113,22 @@ func TestValidate(t *testing.T) {
 	err := LoadConfig([]string{"./t-data/t1.cfg"}, &cfg)
 	assert.EqualError(t, err, "err out on validate")
 }
+
+type testCfgTemplated struct {
+	Templated string `yaml:"templated"`
+	Env       string `yaml:"env"`
+}
+
+func (t *testCfgTemplated) GetSecret(s string) string {
+	return "secret" + s
+}
+
+func TestTemplated(t *testing.T) {
+	c := testCfgTemplated{}
+	os.Setenv("_yamlcfg_test", "test env key")
+	err := LoadConfig([]string{"./t-data/t1.cfg"}, &c)
+	require.NoError(t, err)
+	assert.Equal(t, "secrettest", c.Templated)
+	assert.Equal(t, "test env key", c.Env)
+
+}
