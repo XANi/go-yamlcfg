@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"crypto/rand"
 	"fmt"
-	"gopkg.in/yaml.v3"
+	"github.com/goccy/go-yaml"
 	"io/ioutil"
 	"math/big"
 	"os"
@@ -13,6 +13,9 @@ import (
 )
 
 var CharsetAlphanumeric = "1234567890ABCDEFGHIKLMNOPQRSTUVWXYZabcdefghiklmnopqrstuvwxyz"
+
+type Config struct {
+}
 
 // LoadConfig loads first YAML file on cfgFiles list into cfg interface
 // if cfg have defined GetDefaultConfig() method it will also create a default config file in first location if it can't find any config and the method returns more than zero characters

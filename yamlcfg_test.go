@@ -51,7 +51,7 @@ func TestService(t *testing.T) {
 		Test2:         map[string]string{"test3": "123"},
 		Test3:         "bbb",
 		Bool1:         true,
-		Bool2:         true,
+		Bool2:         false,
 	}
 	t.Run("load yaml", func(t *testing.T) {
 		err := LoadConfig([]string{"./t-data/t1.cfg"}, &c)
@@ -126,7 +126,7 @@ func (t *testCfgTemplated) GetSecret(s string) string {
 func TestTemplated(t *testing.T) {
 	c := testCfgTemplated{}
 	os.Setenv("_yamlcfg_test", "test env key")
-	err := LoadConfig([]string{"./t-data/t1.cfg"}, &c)
+	err := LoadConfig([]string{"./t-data/t2.cfg"}, &c)
 	require.NoError(t, err)
 	assert.Equal(t, "secrettest", c.Templated)
 	assert.Equal(t, "test env key", c.Env)
