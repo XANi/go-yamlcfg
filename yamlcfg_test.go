@@ -2,6 +2,8 @@ package yamlcfg
 
 import (
 	"fmt"
+	"github.com/goccy/go-yaml"
+	"github.com/goccy/go-yaml/ast"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"os"
@@ -130,5 +132,35 @@ func TestTemplated(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, "secrettest", c.Templated)
 	assert.Equal(t, "test env key", c.Env)
+
+}
+
+type Partial struct {
+	Config map[string]ast.Node `yaml:"config"`
+}
+type SubPartial1 struct {
+	Option1 string `yaml:"option1"`
+	Option2 string `yaml:"option2"`
+}
+type SubPartial2 struct {
+	Option1 int `yaml:"option1"`
+	Option2 int `yaml:"option2"`
+}
+
+func TestPartialParse(t *testing.T) {
+	c := Partial{}
+	err := LoadConfig([]string{"./t-data/t4.cfg"}, &c)
+	require.NoError(t, err)
+	assert.Len(t, c.Config, 2)
+	o1 := SubPartial1{}
+	o2 := SubPartial2{}
+	err = yaml.Unmarshal([]byte(c.Config["plugin1"].String()), &o1)
+	require.NoError(t, err)
+	err = yaml.Unmarshal([]byte(c.Config["plugin2"].String()), &o2)
+	require.NoError(t, err)
+	assert.Equal(t, o1.Option1, "asd")
+	assert.Equal(t, o1.Option2, "dsa")
+	assert.EqualValues(t, o2.Option1, 2)
+	assert.EqualValues(t, o2.Option2, 3)
 
 }

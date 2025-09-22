@@ -98,7 +98,6 @@ func LoadConfigFromString(s string, cfg interface{}) error {
 			return err
 		}
 	}
-
 	return err
 }
 
